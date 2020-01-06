@@ -48,7 +48,11 @@ Each restaurant provides new lunch each day.
 {"name":"Balsamic Grilled Chicken","price":1300}]}</pre>
 
 <h3>Vote for Restaurant (the number is the restaurant ID):</h3>
-<code>curl -i -s -X POST http://localhost:8080/restaurants/1/vote --user user@yandex.ru:userPassword</code>
+<code>curl -i -s -X POST http://localhost:8080/restaurants/1/vote --user user2@yandex.ru:user2Password</code>
+<pre>HTTP/1.1 204 No Content</pre>
+
+<h3>Update vote for Restaurant:</h3>
+<code>curl -i -s -X PUT http://localhost:8080/restaurants/1/vote --user user@yandex.ru:userPassword</code>
 <ul>
 <li>If before 11AM:</li>
     <pre>HTTP/1.1 204 No Content</pre>

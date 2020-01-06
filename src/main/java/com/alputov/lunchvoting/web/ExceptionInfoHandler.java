@@ -42,6 +42,7 @@ public class ExceptionInfoHandler {
     public static final String EXCEPTION_DUPLICATE_NAME_RESTAURANT_SAME_OWNER = "exception.restaurant.duplicateName";
     public static final String EXCEPTION_VOTE_LATE = "exception.vote.late";
     public static final String EXCEPTION_VOTE_DOES_NOT_EXIST = "exception.vote.doesNotExist";
+    public static final String EXCEPTION_RESTAURANT_DOES_NOT_HAVE_MENU = "exception.restaurant.doesNotHaveMenu";
 
     private static final Map<String, String> CONSTRAINS_MAP = Map.of(
             "users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL,

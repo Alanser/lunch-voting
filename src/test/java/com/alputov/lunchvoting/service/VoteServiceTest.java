@@ -17,19 +17,28 @@ class VoteServiceTest extends AbstractServiceTest {
     VoteService voteService;
 
     @Test
-    void createOrUpdate() {
-        voteService.createOrUpdate(NOMA_REST, USER, LocalTime.of(10, 0));
-        MenuOfDay voted = voteService.getMenuVotedFor(USER_ID);
+    void create() {
+        voteService.create(NOMA_REST_ID, USER2);
+        MenuOfDay voted = voteService.getMenuVotedFor(USER2_ID);
         assertEquals(NOMA_REST_ID, voted.getRestaurant().getId());
+    }
 
-        voteService.createOrUpdate(MIRAZUR_REST, USER, LocalTime.of(10, 0));
+    @Test
+    void createWithoutMenu() {
+        assertThrows(ApplicationException.class,
+                () -> voteService.create(ASADOR_REST_ID, USER2));
+    }
+
+    @Test
+    void update() {
+        voteService.update(MIRAZUR_REST_ID, USER, LocalTime.of(10, 0));
         MenuOfDay updated = voteService.getMenuVotedFor(USER_ID);
         assertEquals(MIRAZUR_REST_ID, updated.getRestaurant().getId());
     }
 
     @Test
-    void lateVote() {
+    void updateVoteLate() {
         assertThrows(ApplicationException.class,
-                () -> voteService.createOrUpdate(NOMA_REST, USER, LocalTime.of(11, 30)));
+                () -> voteService.update(NOMA_REST_ID, USER, LocalTime.of(11, 30)));
     }
 }

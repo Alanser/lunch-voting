@@ -105,6 +105,10 @@ abstract public class AbstractControllerTest {
         return wrap(MockMvcRequestBuilders.put(url + "{id}", id));
     }
 
+    protected RequestWrapper doPut(String pad) {
+        return wrap(MockMvcRequestBuilders.put(url + pad));
+    }
+
     protected RequestWrapper doPost(String pad) throws Exception {
         return wrap(MockMvcRequestBuilders.post(url + pad));
     }

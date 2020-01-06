@@ -11,6 +11,8 @@ import java.util.Date;
 @Table(name = "votes", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "votes_unique_idx")})
 public class Vote extends AbstractBaseEntity {
 
+    public static final int HOUR_EXPIRED = 11;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

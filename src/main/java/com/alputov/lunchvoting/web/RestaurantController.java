@@ -11,7 +11,6 @@ import com.alputov.lunchvoting.to.DishTo;
 import com.alputov.lunchvoting.to.MenuOfDay;
 import com.alputov.lunchvoting.to.RestaurantTo;
 import com.alputov.lunchvoting.util.RestaurantUtil;
-import com.alputov.lunchvoting.util.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,8 +99,8 @@ public class RestaurantController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @Transactional
     public MenuOfDay createMenu(@Validated(View.Web.class) @RequestBody List<DishTo> dishes,
-                            @PathVariable int id,
-                            @AuthenticationPrincipal AuthorizedUser authUser) {
+                                @PathVariable int id,
+                                @AuthenticationPrincipal AuthorizedUser authUser) {
         menuService.delete(id);
         return menuService.create(id, dishes);
     }
@@ -109,9 +108,14 @@ public class RestaurantController {
     @PostMapping(value = "/{id}/vote")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @Transactional
-    public void voteForRestaurant(@PathVariable int id, @AuthenticationPrincipal AuthorizedUser authUser) {
-        Restaurant r = restaurantRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
-        log.info("vote for restaurant {} by user {}", id, authUser.getId());
-        voteService.createOrUpdate(r, authUser.getUser(), LocalTime.now());
+    public void createVote(@PathVariable int id, @AuthenticationPrincipal AuthorizedUser authUser) {
+        voteService.create(id, authUser.getUser());
+    }
+
+    @PutMapping(value = "/{id}/vote")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @Transactional
+    public void updateVote(@PathVariable int id, @AuthenticationPrincipal AuthorizedUser authUser) {
+        voteService.update(id, authUser.getUser(), LocalTime.now());
     }
 }

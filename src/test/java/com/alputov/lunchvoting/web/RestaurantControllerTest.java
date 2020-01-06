@@ -3,6 +3,7 @@ package com.alputov.lunchvoting.web;
 
 import com.alputov.lunchvoting.TestData;
 import com.alputov.lunchvoting.model.Restaurant;
+import com.alputov.lunchvoting.model.Vote;
 import com.alputov.lunchvoting.service.MenuService;
 import com.alputov.lunchvoting.service.RestaurantService;
 import com.alputov.lunchvoting.service.VoteService;
@@ -26,9 +27,11 @@ import static com.alputov.lunchvoting.TestUtil.readFromJson;
 import static com.alputov.lunchvoting.util.exception.ErrorType.DATA_NOT_FOUND;
 import static com.alputov.lunchvoting.util.exception.ErrorType.VALIDATION_ERROR;
 import static com.alputov.lunchvoting.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_NAME_RESTAURANT_SAME_OWNER;
+import static com.alputov.lunchvoting.web.ExceptionInfoHandler.EXCEPTION_RESTAURANT_DOES_NOT_HAVE_MENU;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class RestaurantControllerTest extends AbstractControllerTest {
 
@@ -187,20 +190,35 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void voteForRestaurant() throws Exception {
+    void createVote() throws Exception {
         MenuOfDay menu = menuService.get(NOMA_REST_ID);
-        if (LocalTime.now().getHour() < 11) {
-            perform(doPost("/" + NOMA_REST_ID + "/vote").basicAuth(USER))
+        perform(doPost("/" + NOMA_REST_ID + "/vote").basicAuth(USER2))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+        MENU_MATCHERS.assertMatch(voteService.getMenuVotedFor(USER2_ID), menu);
+    }
+
+    @Test
+    void createVoteForRestaurantWithoutMenu() throws Exception {
+        perform(doPost("/" + ASADOR_REST_ID + "/vote").basicAuth(USER2))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessage(EXCEPTION_RESTAURANT_DOES_NOT_HAVE_MENU));
+    }
+
+    @Test
+    void updateVote() throws Exception {
+        if (LocalTime.now().getHour() < Vote.HOUR_EXPIRED) {
+            MenuOfDay menu = menuService.get(MIRAZUR_REST_ID);
+            perform(doPut("/" + MIRAZUR_REST_ID + "/vote").basicAuth(USER))
                     .andDo(print())
                     .andExpect(status().isNoContent());
             MENU_MATCHERS.assertMatch(voteService.getMenuVotedFor(USER_ID), menu);
         } else {
-            perform(doPost("/" + NOMA_REST_ID + "/vote").basicAuth(USER))
+            perform(doPut("/" + MIRAZUR_REST_ID + "/vote").basicAuth(USER))
                     .andDo(print())
-                    .andExpect(status().isUnprocessableEntity())
-                    .andExpect(errorType(VALIDATION_ERROR))
-                    .andExpect(detailMessage(ExceptionInfoHandler.EXCEPTION_VOTE_LATE));
+                    .andExpect(status().isUnprocessableEntity());
         }
-
     }
 }
