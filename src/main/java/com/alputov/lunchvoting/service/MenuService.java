@@ -11,6 +11,8 @@ import com.alputov.lunchvoting.util.DishUtil;
 import com.alputov.lunchvoting.util.MenuUtil;
 import com.alputov.lunchvoting.util.RestaurantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -31,12 +33,14 @@ public class MenuService {
     @Autowired
     RestaurantService restaurantService;
 
+    @Cacheable("menus")
     public MenuOfDay get(int restId) {
         Restaurant r = restaurantService.get(restId);
         List<MenuItem> items = menuItemRepository.findAllByRestaurant_IdAndDateWithDishesAndRestaurants(restId, new Date());
         return MenuUtil.getMenuOfDay(RestaurantUtil.asTo(r), items);
     }
 
+    @CacheEvict(value = "menus", allEntries = true)
     @Transactional
     public MenuOfDay create(int restId, List<DishTo> dishTos) {
         Assert.notEmpty(dishTos, "dishes list must not be empty");
@@ -49,11 +53,13 @@ public class MenuService {
         return new MenuOfDay(RestaurantUtil.asTo(r), dishTos);
     }
 
+    @CacheEvict(value = "menus", allEntries = true)
     @Transactional
     public void delete(int restId) {
         menuItemRepository.deleteAllByRestaurant_IdAndDate(restId, new Date());
     }
 
+    @Cacheable("menus")
     public List<MenuOfDay> getAll() {
         List<MenuItem> menuItems = menuItemRepository.getAllByDateWithDishesAndRestaurants(new Date());
         return MenuUtil.getMenuOfDayList(menuItems);
