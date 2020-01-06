@@ -38,7 +38,7 @@ public class MenuService {
     public MenuOfDay get(int restId) {
         Restaurant r = restaurantRepository.findById(restId).orElse(null);
         Assert.notNull(r, "restaurant must be exists");
-        List<MenuItem> items = menuItemRepository.findAllByRestaurant_IdAndDateWithDishes(restId, new Date());
+        List<MenuItem> items = menuItemRepository.findAllByRestaurant_IdAndDateWithDishesAndRestaurants(restId, new Date());
         return MenuUtil.getMenuOfDay(RestaurantUtil.asTo(r), items);
     }
 
@@ -61,7 +61,7 @@ public class MenuService {
     }
 
     public List<MenuOfDay> getAll() {
-        List<MenuItem> menuItems = menuItemRepository.getAllByDateWithDishes(new Date());
+        List<MenuItem> menuItems = menuItemRepository.getAllByDateWithDishesAndRestaurants(new Date());
         return MenuUtil.getMenuOfDayList(menuItems);
     }
 }

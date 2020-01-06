@@ -1,8 +1,10 @@
 package com.alputov.lunchvoting.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,10 +14,6 @@ public class Dish extends AbstractNamedEntity {
     @Column(name = "price", nullable = false)
     @NotNull
     private Integer price;
-
-    @ManyToMany
-    @JoinTable(name = "menu_item", joinColumns = {@JoinColumn(name = "dish_id")}, inverseJoinColumns = {@JoinColumn(name = "restaurant_id")})
-    private List<Restaurant> restaurants;
 
     public Dish() {
     }
@@ -36,14 +34,6 @@ public class Dish extends AbstractNamedEntity {
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public List<Restaurant> getRestaurants() {
-        return restaurants;
-    }
-
-    public void setRestaurants(List<Restaurant> restaurants) {
-        this.restaurants = restaurants;
     }
 
     @Override

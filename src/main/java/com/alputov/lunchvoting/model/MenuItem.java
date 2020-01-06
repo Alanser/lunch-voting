@@ -8,7 +8,7 @@ import java.util.Date;
 @Table(name = "menu_item", uniqueConstraints = {@UniqueConstraint(columnNames = {"restaurant_id", "dish_id", "date"}, name = "menu_item_unique_idx")})
 public class MenuItem extends AbstractBaseEntity {
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @NotNull
     private Restaurant restaurant;
