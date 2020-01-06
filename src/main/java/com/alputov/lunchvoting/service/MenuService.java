@@ -3,7 +3,6 @@ package com.alputov.lunchvoting.service;
 import com.alputov.lunchvoting.model.Dish;
 import com.alputov.lunchvoting.model.MenuItem;
 import com.alputov.lunchvoting.model.Restaurant;
-import com.alputov.lunchvoting.model.User;
 import com.alputov.lunchvoting.repository.DishRepository;
 import com.alputov.lunchvoting.repository.MenuItemRepository;
 import com.alputov.lunchvoting.repository.RestaurantRepository;
@@ -12,6 +11,7 @@ import com.alputov.lunchvoting.to.MenuOfDay;
 import com.alputov.lunchvoting.util.DishUtil;
 import com.alputov.lunchvoting.util.MenuUtil;
 import com.alputov.lunchvoting.util.RestaurantUtil;
+import com.alputov.lunchvoting.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,17 +36,15 @@ public class MenuService {
     RestaurantService restaurantService;
 
     public MenuOfDay get(int restId) {
-        Restaurant r = restaurantRepository.findById(restId).orElse(null);
-        Assert.notNull(r, "restaurant must be exists");
+        Restaurant r = restaurantRepository.findById(restId).orElseThrow(() -> new NotFoundException(restId));
         List<MenuItem> items = menuItemRepository.findAllByRestaurant_IdAndDateWithDishesAndRestaurants(restId, new Date());
         return MenuUtil.getMenuOfDay(RestaurantUtil.asTo(r), items);
     }
 
     @Transactional
-    public MenuOfDay create(int restId, User user, List<DishTo> dishTos) {
+    public MenuOfDay create(int restId, List<DishTo> dishTos) {
         Assert.notEmpty(dishTos, "dishes list must not be empty");
-        Restaurant r = restaurantService.get(restId, user);
-        Assert.notNull(r, "restaurant for this user must be exists");
+        Restaurant r = restaurantService.get(restId);
         List<Dish> dishes = DishUtil.newFromTo(dishTos);
         dishRepository.saveAll(dishes);
         menuItemRepository.saveAll(MenuUtil.getMenuItemList(r, dishes));
@@ -54,9 +52,7 @@ public class MenuService {
     }
 
     @Transactional
-    public void delete(int restId, User user) {
-        Restaurant r = restaurantService.get(restId, user);
-        Assert.notNull(r, "restaurant for this user must be exists");
+    public void delete(int restId) {
         menuItemRepository.deleteAllByRestaurant_IdAndDate(restId, new Date());
     }
 

@@ -7,4 +7,8 @@ public class NotFoundException extends ApplicationException {
     public NotFoundException(String arg) {
         super(ErrorType.DATA_NOT_FOUND, NOT_FOUND_EXCEPTION, arg);
     }
+
+    public NotFoundException(int arg) {
+        super(ErrorType.DATA_NOT_FOUND, NOT_FOUND_EXCEPTION, String.valueOf(arg));
+    }
 }

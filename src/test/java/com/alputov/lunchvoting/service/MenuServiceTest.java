@@ -19,7 +19,7 @@ class MenuServiceTest extends AbstractServiceTest {
 
     @Test
     void create() {
-        MenuOfDay newMoD = menuService.create(ASADOR_REST_ID, ADMIN, DishUtil.asTo(NEW_DISHES));
+        MenuOfDay newMoD = menuService.create(ASADOR_REST_ID, DishUtil.asTo(NEW_DISHES));
         MENU_MATCHERS.assertMatch(newMoD, NEW_MENU_OF_DAY);
     }
 

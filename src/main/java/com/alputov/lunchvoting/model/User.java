@@ -104,10 +104,6 @@ public class User extends AbstractNamedEntity implements HasEmail {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
     }
 
-    public boolean isAdmin() {
-        return roles.contains(Role.ROLE_ADMIN);
-    }
-
     @Override
     public String toString() {
         return "User{" +

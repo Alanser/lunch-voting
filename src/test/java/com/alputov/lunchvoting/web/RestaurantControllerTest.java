@@ -23,12 +23,12 @@ import java.util.List;
 
 import static com.alputov.lunchvoting.TestData.*;
 import static com.alputov.lunchvoting.TestUtil.readFromJson;
+import static com.alputov.lunchvoting.util.exception.ErrorType.DATA_NOT_FOUND;
 import static com.alputov.lunchvoting.util.exception.ErrorType.VALIDATION_ERROR;
 import static com.alputov.lunchvoting.web.ExceptionInfoHandler.EXCEPTION_DUPLICATE_NAME_RESTAURANT_SAME_OWNER;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class RestaurantControllerTest extends AbstractControllerTest {
 
@@ -60,9 +60,12 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getNotOwn() throws Exception {
-        perform(doGet(NOMA_REST_ID).basicAuth(USER))
-                .andExpect(status().isUnprocessableEntity());
+    void getNotFound() throws Exception {
+        perform(doGet(1000000).basicAuth(ADMIN))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(DATA_NOT_FOUND))
+                .andExpect(detailMessage(NotFoundException.NOT_FOUND_EXCEPTION, String.valueOf(1000000)))
+                .andDo(print());
     }
 
     @Test
@@ -83,7 +86,15 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         Integer newId = created.getId();
         newR.setId(newId);
         RESTAURANT_MATCHERS.assertMatch(created, newR);
-        RESTAURANT_MATCHERS.assertMatch(restaurantService.get(newId, ADMIN), newR);
+        RESTAURANT_MATCHERS.assertMatch(restaurantService.get(newId), newR);
+    }
+
+    @Test
+    void createWithoutPermission() throws Exception {
+        Restaurant newR = TestData.getNewRestaurant();
+        perform(doPost().jsonBody(newR).basicAuth(USER))
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test
@@ -92,8 +103,7 @@ public class RestaurantControllerTest extends AbstractControllerTest {
         perform(doPost().jsonBody(invalid).basicAuth(ADMIN))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andDo(print());
+                .andExpect(errorType(VALIDATION_ERROR));
     }
 
     @Test
@@ -111,7 +121,14 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(doDelete(NOMA_REST_ID).basicAuth(ADMIN))
                 .andExpect(status().isNoContent());
-        assertThrows(NotFoundException.class, () -> restaurantService.get(NOMA_REST_ID, ADMIN));
+        assertThrows(NotFoundException.class, () -> restaurantService.get(NOMA_REST_ID));
+    }
+
+    @Test
+    void deleteWithoutPermission() throws Exception {
+        perform(doDelete(NOMA_REST_ID).basicAuth(USER))
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test
@@ -121,7 +138,15 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        RESTAURANT_MATCHERS.assertMatch(restaurantService.get(NOMA_REST_ID, ADMIN), updated);
+        RESTAURANT_MATCHERS.assertMatch(restaurantService.get(NOMA_REST_ID), updated);
+    }
+
+    @Test
+    void updateWithoutPermission() throws Exception {
+        Restaurant updated = TestData.getUpdatedRestaurant();
+        perform(doDelete(NOMA_REST_ID).jsonBody(updated).basicAuth(USER))
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test
@@ -151,6 +176,14 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_MATCHERS.contentJson(menu));
+    }
+
+    @Test
+    void createMenuWithoutPermission() throws Exception {
+        List<DishTo> dishes = DishUtil.asTo(NEW_DISHES);
+        perform(doPost("/" + ASADOR_REST_ID + "/menu").jsonBody(dishes).basicAuth(USER))
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test

@@ -1,9 +1,9 @@
 package com.alputov.lunchvoting.service;
 
 import com.alputov.lunchvoting.model.Restaurant;
-import com.alputov.lunchvoting.model.User;
 import com.alputov.lunchvoting.repository.RestaurantRepository;
 import com.alputov.lunchvoting.repository.UserRepository;
+import com.alputov.lunchvoting.util.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,36 +22,31 @@ public class RestaurantService {
     @Autowired
     UserRepository userRepository;
 
-    public Restaurant create(Restaurant r, User user) {
-        return save(r, user);
+    public Restaurant create(Restaurant r) {
+        return save(r);
     }
 
-    public Restaurant update(Restaurant r, User user) {
-        return checkNotFoundWithId(save(r, user), r.getId());
+    public Restaurant update(Restaurant r) {
+        Assert.notNull(r, "restaurant must not be null");
+        get(r.id());
+        return save(r);
     }
 
-    public Restaurant get(int id, User user) {
-        Restaurant r = user.isAdmin() ? restaurantRepository.findById(id).orElse(null) : null;
-        return checkNotFoundWithId(r, id);
+    public Restaurant get(int id) {
+        return restaurantRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
-    public void delete(int id, User user) {
-        checkNotFoundWithId(user.isAdmin() && restaurantRepository.delete(id) != 0, id);
+    public void delete(int id) {
+        checkNotFoundWithId(restaurantRepository.delete(id) != 0, id);
     }
 
-    public List<Restaurant> getAll(User user) {
-        if(!user.isAdmin()){
-            return null;
-        }
+    public List<Restaurant> getAll() {
         return restaurantRepository.findAll();
     }
 
     @Transactional
-    public Restaurant save(Restaurant r, User user) {
+    public Restaurant save(Restaurant r) {
         Assert.notNull(r, "restaurant must not be null");
-        if (!r.isNew() && get(r.getId(), user) == null) {
-            return null;
-        }
         return restaurantRepository.save(r);
     }
 }

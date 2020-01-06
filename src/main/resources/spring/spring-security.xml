@@ -7,12 +7,14 @@
     <http pattern="/**" use-expressions="true" name="restSecurityFilterChain" create-session="stateless">
         <http-basic/>
         <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
-        <intercept-url pattern="/restaurants" access="hasRole('ROLE_ADMIN')" method="POST"/>
+        <intercept-url pattern="/restaurants/*" access="hasRole('ROLE_ADMIN')" method="POST"/>
+        <intercept-url pattern="/restaurants/*" access="hasRole('ROLE_ADMIN')" method="GET"/>
         <intercept-url pattern="/restaurants/*" access="hasRole('ROLE_ADMIN')" method="PUT"/>
         <intercept-url pattern="/restaurants/*" access="hasRole('ROLE_ADMIN')" method="DELETE"/>
-        <intercept-url pattern="/restaurants/*/menu" access="isAuthenticated()"/>
+        <intercept-url pattern="/restaurants/*/menu" access="isAuthenticated()" method="GET"/>
+        <intercept-url pattern="/restaurants/*/menu" access="hasRole('ROLE_ADMIN')" method="POST"/>
         <intercept-url pattern="/restaurants/*/vote" access="isAuthenticated()"/>
-        <intercept-url pattern="/**" access="isAuthenticated()"/>
+        <intercept-url pattern="/menus" access="isAuthenticated()"/>
         <csrf disabled="true"/>
     </http>
 

@@ -160,4 +160,8 @@ abstract public class AbstractControllerTest {
     public ResultMatcher detailMessage(String code) {
         return jsonPath("$.details").value(messageSourceAccessor.getMessage(code));
     }
+
+    public ResultMatcher detailMessage(String code, String... args) {
+        return jsonPath("$.details").value(messageSourceAccessor.getMessage(code, args));
+    }
 }
