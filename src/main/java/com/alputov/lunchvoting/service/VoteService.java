@@ -49,6 +49,7 @@ public class VoteService {
         return voteRepository.save(new Vote(user, r));
     }
 
+    @Transactional
     public Vote update(int restId, User user, LocalTime time) {
         if (time.getHour() >= Vote.HOUR_EXPIRED) {
             throw new ApplicationException(ErrorType.VALIDATION_ERROR, ExceptionInfoHandler.EXCEPTION_VOTE_LATE);
@@ -59,7 +60,7 @@ public class VoteService {
         return voteRepository.save(vote);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public MenuOfDay getMenuVotedFor(int userId) {
         Vote vote = voteRepository.findByUser_idAndDate(userId, new Date());
         if (vote == null) {

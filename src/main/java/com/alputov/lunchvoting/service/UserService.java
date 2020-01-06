@@ -7,7 +7,6 @@ import com.alputov.lunchvoting.to.UserTo;
 import com.alputov.lunchvoting.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 import static com.alputov.lunchvoting.util.UserUtil.prepareToSave;
 import static com.alputov.lunchvoting.util.ValidationUtil.checkNotFound;
@@ -67,11 +64,6 @@ public class UserService implements UserDetailsService {
     public void update(UserTo userTo) {
         User user = get(userTo.id());
         prepareAndSave(UserUtil.updateFromTo(user, userTo));
-    }
-
-    @Cacheable("users")
-    public List<User> getAll() {
-        return repository.findAll();
     }
 
     @Override

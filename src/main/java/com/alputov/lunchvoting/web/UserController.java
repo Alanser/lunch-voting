@@ -3,7 +3,6 @@ package com.alputov.lunchvoting.web;
 import com.alputov.lunchvoting.View;
 import com.alputov.lunchvoting.model.User;
 import com.alputov.lunchvoting.service.UserService;
-import com.alputov.lunchvoting.util.exception.ModificationRestrictionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +15,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 import static com.alputov.lunchvoting.util.ValidationUtil.assureIdConsistent;
 import static com.alputov.lunchvoting.util.ValidationUtil.checkNew;
 
 @RestController
-@RequestMapping(value = AdminController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class AdminController {
+@RequestMapping(value = UserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+public class UserController {
 
-    public static final String REST_URL = "/admin/users";
+    public static final String REST_URL = "/users";
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -37,12 +35,6 @@ public class AdminController {
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.addValidators(emailValidator);
-    }
-
-    @GetMapping
-    public List<User> getAll() {
-        log.info("getAll");
-        return service.getAll();
     }
 
     @GetMapping("/{id}")
@@ -66,7 +58,6 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         log.info("delete {}", id);
-        checkModificationAllowed(id);
         service.delete(id);
     }
 
@@ -75,7 +66,6 @@ public class AdminController {
     public void update(@Validated(View.Web.class) @RequestBody User user, @PathVariable int id) {
         log.info("update {} with id={}", user, id);
         assureIdConsistent(user, id);
-        checkModificationAllowed(id);
         service.update(user);
     }
 
@@ -83,11 +73,5 @@ public class AdminController {
     public User getByMail(@RequestParam String email) {
         log.info("getByEmail {}", email);
         return service.getByEmail(email);
-    }
-
-    private void checkModificationAllowed(int id) {
-        if (id < 2) {
-            throw new ModificationRestrictionException();
-        }
     }
 }

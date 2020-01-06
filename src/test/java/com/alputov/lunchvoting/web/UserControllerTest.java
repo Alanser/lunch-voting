@@ -21,13 +21,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AdminControllerTest extends AbstractControllerTest{
+class UserControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserService userService;
 
-    AdminControllerTest() {
-        super(AdminController.REST_URL);
+    UserControllerTest() {
+        super(UserController.REST_URL);
     }
 
     @Test
@@ -102,14 +102,6 @@ class AdminControllerTest extends AbstractControllerTest{
         newUser.setId(newId);
         USER_MATCHERS.assertMatch(created, newUser);
         USER_MATCHERS.assertMatch(userService.get(newId), newUser);
-    }
-
-    @Test
-    void getAll() throws Exception {
-        perform(doGet().basicAuth(ADMIN))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHERS.contentJson(ADMIN, USER, USER2));
     }
 
     @Test

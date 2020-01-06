@@ -88,7 +88,7 @@ Each restaurant provides new lunch each day.
 <h2>User administration:</h2>
 
 <h3>Create user:</h3>
-<code>curl -i -s -X POST -d '{"name":"New User","email":"new_user@yandex.ru","password":"newPassword","roles":["ROLE_USER"]}' -H 'Content-Type: application/json' http://localhost:8080/admin/users --user admin@gmail.com:adminPassword</code>
+<code>curl -i -s -X POST -d '{"name":"New User","email":"new_user@yandex.ru","password":"newPassword","roles":["ROLE_USER"]}' -H 'Content-Type: application/json' http://localhost:8080/users --user admin@gmail.com:adminPassword</code>
 <pre>HTTP/1.1 201 Created
 {"id":4,
 "name":"New User",
@@ -97,11 +97,11 @@ Each restaurant provides new lunch each day.
 "roles":["ROLE_USER"]}</pre>
 
 <h3>Update user:</h3>
-<code>curl -i -s -X PUT -d '{"name":"Edited Name","email":"editedemail@yandex.ru","password":"editedPassword","roles":["ROLE_ADMIN"]}' -H 'Content-Type: application/json' http://localhost:8080/admin/users/2 --user admin@gmail.com:adminPassword</code>
+<code>curl -i -s -X PUT -d '{"name":"Edited Name","email":"editedemail@yandex.ru","password":"editedPassword","roles":["ROLE_ADMIN"]}' -H 'Content-Type: application/json' http://localhost:8080/users/2 --user admin@gmail.com:adminPassword</code>
 <pre>HTTP/1.1 204 No Content</pre>
 
 <h3>Get user:</h3>
-<code>curl -i -s -X GET http://localhost:8080/admin/users/2 --user admin@gmail.com:adminPassword</code>
+<code>curl -i -s -X GET http://localhost:8080/users/2 --user admin@gmail.com:adminPassword</code>
 
 <pre>HTTP/1.1 200 OK
 {"id":2,
@@ -111,7 +111,7 @@ Each restaurant provides new lunch each day.
 "roles":["ROLE_USER"]}</pre>
 
 <h3>Delete user:</h3>
-<code>curl -i -s -X DELETE http://localhost:8080/admin/users/2 --user admin@gmail.com:adminPassword</code>
+<code>curl -i -s -X DELETE http://localhost:8080/users/2 --user admin@gmail.com:adminPassword</code>
 <pre>HTTP/1.1 204 No Content</pre>
 
 <h2>Restaurant administration:</h2>
