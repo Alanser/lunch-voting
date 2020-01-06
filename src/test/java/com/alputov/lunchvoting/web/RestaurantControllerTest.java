@@ -182,6 +182,27 @@ public class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void createMenuForNotExistedRestaurant() throws Exception {
+        List<DishTo> dishes = DishUtil.asTo(NEW_DISHES);
+        perform(doPost("/" + 1000000 + "/menu").jsonBody(dishes).basicAuth(ADMIN))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage(NotFoundException.NOT_FOUND_EXCEPTION, String.valueOf(1000000)));
+    }
+
+
+    @Test
+    void createMenuWithExistedDishes() throws Exception {
+        List<DishTo> dishes = List.of(new DishTo("Cheese Burger", 655), new DishTo("Fresh Salmon", 760));
+        MenuOfDay menu = new MenuOfDay(RestaurantUtil.asTo(ASADOR_REST), dishes);
+        perform(doPost("/" + ASADOR_REST_ID + "/menu").jsonBody(dishes).basicAuth(ADMIN))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MENU_MATCHERS.contentJson(menu));
+    }
+
+    @Test
     void createMenuWithoutPermission() throws Exception {
         List<DishTo> dishes = DishUtil.asTo(NEW_DISHES);
         perform(doPost("/" + ASADOR_REST_ID + "/menu").jsonBody(dishes).basicAuth(USER))
@@ -196,6 +217,14 @@ public class RestaurantControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         MENU_MATCHERS.assertMatch(voteService.getMenuVotedFor(USER2_ID), menu);
+    }
+
+    @Test
+    void createVoteForDoesNotExistRestaurant() throws Exception {
+        perform(doPost("/" + 1000000 + "/vote").basicAuth(USER))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(detailMessage(NotFoundException.NOT_FOUND_EXCEPTION, String.valueOf(1000000)));
     }
 
     @Test

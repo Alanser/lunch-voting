@@ -31,6 +31,9 @@ public class VoteService {
     RestaurantRepository restaurantRepository;
 
     @Autowired
+    RestaurantService restaurantService;
+
+    @Autowired
     MenuService menuService;
 
     @Autowired
@@ -39,10 +42,10 @@ public class VoteService {
     @Transactional
     public Vote create(int restId, User user) {
         List<MenuItem> items = itemRepository.findAllByRestaurant_IdAndDate(restId, new Date());
+        Restaurant r = restaurantService.get(restId);
         if (items.isEmpty()) {
             throw new ApplicationException(ErrorType.VALIDATION_ERROR, ExceptionInfoHandler.EXCEPTION_RESTAURANT_DOES_NOT_HAVE_MENU);
         }
-        Restaurant r = restaurantRepository.getOne(restId);
         return voteRepository.save(new Vote(user, r));
     }
 
