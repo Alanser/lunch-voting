@@ -99,8 +99,7 @@ public class RestaurantController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @Transactional
     public MenuOfDay createMenu(@Validated(View.Web.class) @RequestBody List<DishTo> dishes,
-                                @PathVariable int id,
-                                @AuthenticationPrincipal AuthorizedUser authUser) {
+                                @PathVariable int id) {
         menuService.delete(id);
         return menuService.create(id, dishes);
     }

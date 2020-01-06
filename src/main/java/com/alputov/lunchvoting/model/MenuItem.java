@@ -1,5 +1,9 @@
 package com.alputov.lunchvoting.model;
 
+import com.alputov.lunchvoting.View;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -10,12 +14,14 @@ public class MenuItem extends AbstractBaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @NotNull
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull(groups = View.Persist.class)
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id", nullable = false)
-    @NotNull
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull(groups = View.Persist.class)
     private Dish dish;
 
     @Column(name = "date", nullable = false, columnDefinition = "date default getdate()")

@@ -1,6 +1,8 @@
 package com.alputov.lunchvoting.to;
 
+import com.alputov.lunchvoting.View;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,6 +14,7 @@ public class DishTo {
 
     @NotBlank
     @Size(min = 2, max = 100)
+    @SafeHtml(groups = {View.Web.class})
     private String name;
 
     @NotNull
