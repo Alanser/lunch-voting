@@ -22,4 +22,5 @@
     </cache-template>
 
     <cache alias="menus" uses-template="expiryCache"/>
+    <cache alias="users" uses-template="expiryCache"/>
 </config>

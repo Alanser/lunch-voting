@@ -6,6 +6,8 @@ import com.alputov.lunchvoting.repository.UserRepository;
 import com.alputov.lunchvoting.to.UserTo;
 import com.alputov.lunchvoting.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,24 +39,29 @@ public class UserService implements UserDetailsService {
         return prepareAndSave(user);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void delete(int id) {
         checkNotFoundWithId(repository.delete(id) != 0, id);
     }
 
+    @Cacheable("users")
     public User get(int id) {
         return checkNotFoundWithId(repository.findById(id).orElse(null), id);
     }
 
+    @Cacheable("users")
     public User getByEmail(String email) {
         Assert.notNull(email, "email must not be null");
         return checkNotFound(repository.getByEmail(email), "email=" + email);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void update(User user) {
         Assert.notNull(user, "user must not be null");
         prepareAndSave(user);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     @Transactional
     public void update(UserTo userTo) {
         User user = get(userTo.id());
